@@ -100,7 +100,11 @@ server.use(
 server.use(passport.authenticate("session"));
 server.use(cookieParser());
 
-server.use(cors({ exposedHeaders: ["X-Total-Count"] }));
+server.use(cors({
+  origin: ["http://localhost:3000", "https://your-frontend.vercel.app"],
+  credentials: true,
+  exposedHeaders: ["X-Total-Count"]
+}));
 server.use(express.json()); //to parse req.body
 server.use("/products", isAuth(), productsRouter.router);
 server.use("/brands", isAuth(), brandsRouter.router);
