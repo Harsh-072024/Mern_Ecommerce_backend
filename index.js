@@ -101,7 +101,7 @@ server.use(passport.authenticate("session"));
 server.use(cookieParser());
 
 server.use(cors({
-  origin: ["http://localhost:3000", "https://your-frontend.vercel.app"],
+  origin: ["http://localhost:3000", "https://mern-ecommerce-frontend-8h76.vercel.app"],
   credentials: true,
   exposedHeaders: ["X-Total-Count"]
 }));

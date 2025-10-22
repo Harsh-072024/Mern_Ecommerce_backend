@@ -44,6 +44,8 @@ exports.loginUser = async (req, res) => {
     .cookie("jwt", req.user.token, {
       expires: new Date(Date.now() + 3600000),
       httpOnly: true,
+      secure: true, // required for HTTPS (Render)
+      sameSite: "None", // required for cross-origin cookies
     })
     .status(201)
     .json(req.user.token);
