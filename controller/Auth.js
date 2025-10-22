@@ -56,6 +56,8 @@ exports.logout = async (req, res) => {
     .cookie("jwt", null, {
       expires: new Date(Date.now()),
       httpOnly: true,
+      secure: true, // required for HTTPS (Render)
+      sameSite: "None",
     })
     .sendStatus(200)
 };

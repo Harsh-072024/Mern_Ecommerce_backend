@@ -188,7 +188,7 @@ passport.deserializeUser(function (user, cb) {
 
 
 
-//payments creete order
+//payments create order
 
 const Razorpay = require("razorpay");
 

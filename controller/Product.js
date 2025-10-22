@@ -21,10 +21,11 @@ exports.fetchAllProducts = async (req, res) => {
   if(!req.query.admin){
       condition.deleted = {$ne:true}
   }
-  // console.log(req.query.category);
   let query = Product.find(condition);
   let totalProductsQuery = Product.find(condition);
-
+  
+  // console.log(req.query.category);
+  
   if (req.query.category) {
     query = query.find({ category: {$in:req.query.category.split(',')} });
     totalProductsQuery = totalProductsQuery.find({
