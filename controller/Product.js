@@ -36,7 +36,7 @@ exports.fetchAllProducts = async (req, res) => {
     query = query.find({ brand: {$in:req.query.brand.split(',')} });
     totalProductsQuery = totalProductsQuery.find({ brand: {$in:req.query.brand.split(',')} });
   }
-  //TODO : How to get sort on discounted Price not on Actual price
+
   if (req.query._sort && req.query._order) {
     query = query.sort({ [req.query._sort]: req.query._order });
   }

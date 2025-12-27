@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const server = express();
 const mongoose = require("mongoose");
@@ -8,7 +8,6 @@ const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
 const crypto = require("crypto");
 const JwtStrategy = require("passport-jwt").Strategy;
-const ExtractJwt = require("passport-jwt").ExtractJwt;
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 
@@ -19,20 +18,21 @@ const usersRouter = require("./routes/Users");
 const authRouter = require("./routes/Auths");
 const cartRouter = require("./routes/Carts");
 const orderRouter = require("./routes/Order");
+const couponRouter = require("./routes/Coupon");
+
 const User = require("./model/User");
 const { isAuth, sanitizeUser, cookieExtractor } = require("./services/common");
-const Order = require('./model/Order')
+const Order = require("./model/Order");
 
 const jwtSecretKey = process.env.JWT_SECRET_KEY;
 
-
 //Email
-
 
 // jwt options
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
-opts.secretOrKey = process.env.JWT_SECRET_KEY; 
+opts.secretOrKey = process.env.JWT_SECRET_KEY;
+console.log(opts)
 
 // For webhooks, we need raw body
 server.post(
@@ -100,11 +100,16 @@ server.use(
 server.use(passport.authenticate("session"));
 server.use(cookieParser());
 
-server.use(cors({
-  origin: ["http://localhost:3000", "https://mern-ecommerce-frontend-8h76.vercel.app"],
-  credentials: true,
-  exposedHeaders: ["X-Total-Count"]
-}));
+server.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://mern-ecommerce-frontend-8h76.vercel.app",
+    ],
+    credentials: true,
+    exposedHeaders: ["X-Total-Count"],
+  })
+);
 server.use(express.json()); //to parse req.body
 server.use("/products", isAuth(), productsRouter.router);
 server.use("/brands", isAuth(), brandsRouter.router);
@@ -113,7 +118,7 @@ server.use("/users", isAuth(), usersRouter.router);
 server.use("/auth", authRouter.router);
 server.use("/cart", isAuth(), cartRouter.router);
 server.use("/orders", isAuth(), orderRouter.router);
-
+server.use("/coupons", isAuth(), couponRouter.router);
 
 // passport stratigies
 passport.use(
@@ -133,14 +138,17 @@ passport.use(
           310000,
           32,
           "sha256",
-          async function (err, hashedPassword) {
+            function (err, hashedPassword) {
+            if (err) return done(err);
+
             if (!crypto.timingSafeEqual(user.password, hashedPassword)) {
               return done(null, false, { message: "invalid credentilas" });
             }
+
+            const token = jwt.sign(sanitizeUser(user), jwtSecretKey);
+            return done(null, { id: user.id, role: user.role, token }); // this lines sends to serializer
           }
         );
-        const token = jwt.sign(sanitizeUser(user), jwtSecretKey);
-        return done(null, { id: user.id, role: user.role , token}); // this lines sends to serializer
       } catch (err) {
         return done(err);
       }
@@ -163,30 +171,21 @@ passport.use(
     }
   })
 );
+
 // this creates session variable of req.user on being called from callback
 passport.serializeUser(function (user, cb) {
-  // console.log("serialize", user);
   process.nextTick(function () {
     cb(null, { id: user.id, role: user.role });
   });
 });
 
-passport.serializeUser((user, done) => {
-  done(null, user.id); // only store user id in session
-});
-
-
 
 // this changes session variable of req.user   called from authorized request
-
 passport.deserializeUser(function (user, cb) {
-  //console.log("deserialize", user.id);
   process.nextTick(function () {
     return cb(null, user);
   });
 });
-
-
 
 //payments create order
 
