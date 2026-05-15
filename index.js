@@ -105,6 +105,7 @@ server.use(
     origin: [
       "http://localhost:3000",
       "https://mern-ecommerce-frontend-8h76.vercel.app",
+      "https://mern-ecommerce-frontend-peach-one.vercel.app"
     ],
     credentials: true,
     exposedHeaders: ["X-Total-Count"],
