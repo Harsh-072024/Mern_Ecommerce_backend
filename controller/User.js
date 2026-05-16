@@ -4,9 +4,7 @@ exports.fetchUserById = async (req,res) => {
     const {id} = req.user;
     try {
         const user = await User.findById(id);
-        delete user.password;
-        delete user.salt;
-        res.status(200).json(user)
+        res.status(200).json({id:user.id, name: user.name, email:user.email, role:user.role, addresses:user.addresses})
     } catch (error) {
        res.status(400).json(error)
 

@@ -32,7 +32,7 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY;
 const opts = {};
 opts.jwtFromRequest = cookieExtractor;
 opts.secretOrKey = process.env.JWT_SECRET_KEY;
-console.log(opts)
+
 
 // For webhooks, we need raw body
 server.post(
@@ -57,7 +57,6 @@ server.post(
 
       // Parse event
       const event = JSON.parse(req.body.toString());
-      console.log(" Webhook Event:", event.event);
       switch (event.event) {
         case "payment.captured": {
           const payment = event.payload.payment.entity;
@@ -112,6 +111,7 @@ server.use(
   })
 );
 server.use(express.json()); //to parse req.body
+
 server.use("/products", isAuth(), productsRouter.router);
 server.use("/brands", isAuth(), brandsRouter.router);
 server.use("/categories", isAuth(), categoriesRouter.router);
@@ -143,7 +143,7 @@ passport.use(
             if (err) return done(err);
 
             if (!crypto.timingSafeEqual(user.password, hashedPassword)) {
-              return done(null, false, { message: "invalid credentilas" });
+              return done(null, false, { message: "invalid credentials" });
             }
 
             const token = jwt.sign(sanitizeUser(user), jwtSecretKey);

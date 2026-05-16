@@ -42,22 +42,22 @@ exports.createUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   res
     .cookie("jwt", req.user.token, {
-      expires: new Date(Date.now() + 3600000),
-      httpOnly: false,
+      httpOnly: true,
       secure: true, // required for HTTPS (Render)
       sameSite: "none", // required for cross-origin cookies
+      maxAge: 60*60*1000, // 1 hour
     })
-    .status(201)
+    .status(200)
     .json(req.user.token);
 };
 
 exports.logout = async (req, res) => {
   res
     .cookie("jwt", null, {
-      expires: new Date(Date.now()),
       httpOnly: true,
       secure: true, // required for HTTPS (Render)
       sameSite: "None",
+      maxAge: 0,
     })
     .sendStatus(200)
 };
@@ -80,7 +80,7 @@ exports.resetPasswordRequest = async(req, res) => {
 
     // also set token and email in params link
 
-    const resetPageLink = 'http://localhost:3000/reset-password?token=' + token + '&email=' + email;
+    const resetPageLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}&email=${email}`;
     const subject= "reset password for e-commerce";
     const html = `<p>Click <a href= ${resetPageLink}>here</a> to reset password</p>`
     
