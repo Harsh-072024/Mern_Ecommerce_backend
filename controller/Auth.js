@@ -42,7 +42,7 @@ exports.createUser = async (req, res) => {
 exports.loginUser = async (req, res) => {
   res
     .cookie("jwt", req.user.token, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true, // required for HTTPS (Render)
       sameSite: "none", // required for cross-origin cookies
       maxAge: 60*60*1000, // 1 hour
@@ -54,7 +54,7 @@ exports.loginUser = async (req, res) => {
 exports.logout = async (req, res) => {
   res
     .cookie("jwt", null, {
-      httpOnly: true,
+      httpOnly: false,
       secure: true, // required for HTTPS (Render)
       sameSite: "None",
       maxAge: 0,
